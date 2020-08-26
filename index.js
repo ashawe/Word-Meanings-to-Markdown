@@ -14,7 +14,7 @@ const http = require('https');
 
 // reads words from a txt file (comma separated). O/p Array of words.
 function wordsFromFileToArray(fileName) {
-    const data = fs.readFileSync('./words1.txt', { encoding: 'utf8', flag: 'r' });
+    const data = fs.readFileSync(fileName, { encoding: 'utf8', flag: 'r' });
     return data.split(',');
 }
 
