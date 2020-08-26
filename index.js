@@ -1,59 +1,121 @@
-var fs = require("fs");
-const https = require('https');
+let fs = require("fs");
+const http = require('https');
 
-// bring data
-https.get('https://api.dictionaryapi.dev/api/v2/entries/en/averse', (resp) => {
+// reads words from a txt file (comma separated). O/p Array of words.
+function wordsFromFileToArray(fileName) {
+    console.log("reading from " + fileName);
+    const data = fs.readFileSync('./words1.txt', { encoding: 'utf8', flag: 'r' });
+    // console.log(data);
+    return data.split(',');
+}
 
-    let data = '';
-    // A chunk of data has been received.
-    resp.on('data', (chunk) => {
-        data += chunk;
+// takes a word,output filename as arg. O/p: void. Appends Meaning to filename
+function findMeaningFromAPI(word) {
+    return new Promise((resolve, reject) => {
+        http.get('https://api.dictionaryapi.dev/api/v2/entries/en/' + word, (response) => {
+            let chunks_of_data = [];
+            response.on('data', (fragments) => {
+                chunks_of_data.push(fragments);
+            });
+
+            response.on('end', () => {
+                let response_body = Buffer.concat(chunks_of_data);
+                resolve(response_body.toString());
+            });
+
+            response.on('error', (error) => {
+                reject(error);
+            });
+        });
     });
+}
 
-    // https://stackoverflow.com/questions/3459476/how-to-append-to-a-file-in-node/43370201#43370201
-    resp.on('end', () => {
-        var stream = fs.createWriteStream("words.md", { flags: 'a' });
-        var result = JSON.parse(data);
+function writeMeaningToFile(inputStream,filename) {
+    return new Promise((resolve, reject) => {
+        let stream = fs.createWriteStream(filename, { flags: 'a' });
+        let toWrite = "";
+        let result = JSON.parse(inputStream);
         // console.log(JSON.parse(data));
-        // var result = data;
-        // stream.write("<details><summary>" + "\n");
-        var synonyms = "synonyms: ";
+        // let result = data;
+        // toWrite += "<details><summary>" + "\n";
+        let synonyms = "synonyms: ";
         // console.log("***************************")
         console.log(result[0].word);
         //innerHTML += result[0].word + "</summary>";
-        stream.write("- " + result[0].word + "\n");
+        toWrite += "- " + result[0].word + "\n";
         //console.log(result[0].meanings);
         //console.log(result[0].meanings.length);
         result[0].meanings.forEach(meaning => {
             // console.log("" + meaning.partOfSpeech + ": ");
-            stream.write("    - " + meaning.partOfSpeech + "\n");
+            toWrite += "    - " + meaning.partOfSpeech + "\n";
             //innerHTML += "* " + meaning.partOfSpeech + "<br>";
             meaning.definitions.forEach(definition => {
                 // console.log("    - " + definition.definition);
-                stream.write("        - " + definition.definition + "\n");
+                toWrite += "        - " + definition.definition + "\n";
                 //innerHTML += "    * " + definition.definition + "<br>";
                 // console.log("    ex: " + definition.example);
-                stream.write("        - ex:" + definition.example + "\n");
+                toWrite += "        - ex: " + definition.example + "\n";
                 //innerHTML += "    * ex: " + definition.example + "<br>";
-                synonyms += " " + definition.synonyms[0];
-                for (let i = 1; i < 5; i++) {
-                    const synonym = definition.synonyms[i];
-                    synonyms = synonyms + ", " + synonym;
+                if(definition.synonyms !== undefined)
+                {
+                    synonyms += " " + definition.synonyms[0];
+                    for (let i = 1; i < 5; i++) {
+                        const synonym = definition.synonyms[i];
+                        synonyms = synonyms + ", " + synonym;
+                    }
                 }
             });
         });
         // console.log(synonyms);
-        stream.write("        - " + synonyms + "\n");
+        toWrite += "        - " + synonyms + "\n";
         // innerHTML += "    * " + synonyms + "<br>";
-        // var word = document.createElement("div");
+        // let word = document.createElement("div");
         // console.log(word);
-        // var body = document.getElementById("body");
+        // let body = document.getElementById("body");
         // console.log(innerHTML);
         // body.innerHTML += innerHTML;
-        // stream.write("</details>");
+        // toWrite += "</details>";
+        console.log("ending stream");
+        stream.write(toWrite);
         stream.end();
+        // holds response from server that is passed when Promise is resolved
+        // console.log(response_body);
+        console.log("resolving");
+        resolve();
     });
+}
 
-}).on("error", (err) => {
-    console.log("Error: " + err.message);
-});
+
+async function writeMeaningToFileHandler(word, filename) {
+    try {
+        let http_promise = findMeaningFromAPI(word);
+        let inputStream = await http_promise;
+        console.log("got stream");
+        let file_writer_promise = writeMeaningToFile(inputStream,filename);
+        let dummyVariable = await file_writer_promise;
+        console.log("wrote to file");
+    }
+    catch (error) {
+        // Promise rejected
+        console.log(error);
+    }
+}
+
+// Takes a file containing words (comma separated) and output file name as arg 
+// and writes meanings to outputFile in markdown
+function wordMeaningToMarkdown(inputFileName, outputFileName) {
+    let arrayOfWords = wordsFromFileToArray(inputFileName);
+    console.log(arrayOfWords);
+    arrayOfWords.forEach(word => {
+        (async function () {
+            // wait to http request to finish
+            await writeMeaningToFileHandler(word,outputFileName);
+            
+            // below code will be executed after http request is finished
+            console.log(2);
+        })();
+    });
+}
+
+// findMeaningAndWrite("averse","./words.md");
+wordMeaningToMarkdown("./words1.txt", "./words.md");
