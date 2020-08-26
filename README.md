@@ -22,6 +22,7 @@ allusion,inclement,atrophy,averse,transcend
 ### Sample:
 <details>
 <summary>Sample Input</summary>
+
 ```
 allusion,inclement,atrophy
 ```
@@ -29,6 +30,7 @@ allusion,inclement,atrophy
 
 <details>
 <summary>Sample Output</summary>
+
 - inclement
     - adjective
         - (of the weather) unpleasantly cold or wet.
@@ -49,4 +51,4 @@ allusion,inclement,atrophy
         - The process of atrophying or state of having atrophied.
         - ex: gastric atrophy
         - synonyms:  waste away, waste, become emaciated, wither, shrivel peter out, taper off, tail off, dwindle, deteriorate wasting, wasting away, emaciation, withering, shrivelling
-<details>
+</details>
