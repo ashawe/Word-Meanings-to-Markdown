@@ -14,9 +14,7 @@ const http = require('https');
 
 // reads words from a txt file (comma separated). O/p Array of words.
 function wordsFromFileToArray(fileName) {
-    console.log("reading from " + fileName);
     const data = fs.readFileSync('./words1.txt', { encoding: 'utf8', flag: 'r' });
-    // console.log(data);
     return data.split(',');
 }
 
@@ -49,7 +47,6 @@ function writeMeaningToFile(inputStream, filename) {
     let result = JSON.parse(inputStream);
     let synonyms = "synonyms: ";
     if(result[0] === undefined) return; // return if no word definition is found
-    console.log(result[0].word);
     toWrite += "- " + result[0].word + "\n";
     result[0].meanings.forEach(meaning => {
         toWrite += "    - " + meaning.partOfSpeech + "\n";
@@ -66,7 +63,6 @@ function writeMeaningToFile(inputStream, filename) {
         });
     });
     toWrite += "        - " + synonyms + "\n";
-    console.log("ending stream");
     stream.write(toWrite);
     stream.end();
 }
@@ -76,9 +72,7 @@ async function waitAndWriteMeaningToFileHandler(word, filename) {
     try {
         let http_promise = findMeaningFromAPI(word);
         let inputStream = await http_promise;
-        console.log("got stream");
         writeMeaningToFile(inputStream, filename);
-        console.log("wrote to file");
     }
     catch (error) {
         // Promise rejected
@@ -90,7 +84,6 @@ async function waitAndWriteMeaningToFileHandler(word, filename) {
 // and writes meanings to outputFile in markdown
 function wordMeaningToMarkdown(inputFileName, outputFileName) {
     let arrayOfWords = wordsFromFileToArray(inputFileName);
-    console.log(arrayOfWords);
     arrayOfWords.forEach(word => {
         (async function () {
             // wait to http request to finish
