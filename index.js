@@ -46,6 +46,7 @@ function writeMeaningToFile(inputStream, filename) {
     let toWrite = "";
     let result = JSON.parse(inputStream);
     let synonyms = "synonyms: ";
+    let isSynonymAvailable = false;
     if(result[0] === undefined) return; // return if no word definition is found
     toWrite += "- " + result[0].word + "\n";
     result[0].meanings.forEach(meaning => {
@@ -54,6 +55,7 @@ function writeMeaningToFile(inputStream, filename) {
             toWrite += "        - " + definition.definition + "\n";
             toWrite += "            - ex: " + definition.example + "\n";
             if (definition.synonyms !== undefined) {
+                isSynonymAvailable = true;
                 synonyms += " " + definition.synonyms[0];
                 for (let i = 1; i < 5; i++) {
                     const synonym = definition.synonyms[i];
@@ -62,7 +64,7 @@ function writeMeaningToFile(inputStream, filename) {
             }
         });
     });
-    if (definition.synonyms !== undefined)
+    if (isSynonymAvailable)
         toWrite += "    - " + synonyms + "\n";
     stream.write(toWrite);
     stream.end();
