@@ -2,6 +2,8 @@
 
 ```A Program to find meanings of words from Google's Dictionary and write necessary details in markdown format.```
 
+Points to remember: Skips words whose definition isn't found.
+
 API USED: https://github.com/meetDeveloper/googleDictionaryAPI
 API ENDPOINT: https://api.dictionaryapi.dev/api/v2/entries/<lanuage-code>/<word>
 AUTHOR: AshAwe (https://github.com/ashawe)
@@ -46,6 +48,7 @@ function writeMeaningToFile(inputStream, filename) {
     let toWrite = "";
     let result = JSON.parse(inputStream);
     let synonyms = "synonyms: ";
+    if(result[0] === undefined) return; // return if no word definition is found
     console.log(result[0].word);
     toWrite += "- " + result[0].word + "\n";
     result[0].meanings.forEach(meaning => {
