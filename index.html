@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+</head>
+
+<body id="body">
+
+</body>
+<script>
+    // var words = "allusion,inclement,atrophy,averse,transcend,onerous,pervasive,tandem,plod,specious,aphorism,beguiling,schism,ameliorate,intermittent,fitful,sporadic,stifle,deter,trudge,commute,requite,sophist,alleviate,phlegmatic,hidebound,obscurantist,prerogative,approbation,geniality,treatise,fractiousness,erudition,prevaricate,capitulate,belabor,esoteric,canonical,precipitous,antithetical,emphatic,perspicacious,forthright,equable,empirical,servile,wean,tenuous,untenable,profuse,assiduous,sedition,sedulous,kowtow,powwow,junta,imbroglio,schadenfreude,zeitgeist,sangfroid,parvenu,picayune,arriviste,shindig,amuck,lagniappe,gerrymander,pyrrhic,kafkaesque,quixotic,maudlin,byzantine,misanthrope,cardinal,syncretic,anathema,desecrate,apostacy,sanctimonious,sybarite,cupidity,pervasive,perplexing,imprudent,prigs,cacophony,intricate,candor,exemplify,pertinent,belching,embellished,overwrought,sematic,ornate,rhetoric,inimitable,expendable,ancillary,deleterious,insipid,churlish,turgid,pique,impediment,precocious,denouement,vestiges,rapturous,affinities,prevail,prevalent,panacea,prolix,doctrinaire,perfunctory,incensed,serendipity,promulgate,disseminate,nefarious,forswear,appease,aggravate,encumber,ostensible,exhortation,apprehension,expeditious,deference,ramification,portentous,augury,embolden,entail,stipulate,anarchist,ecumenical,imperturbable,discern,complacency,abrogate,lenient,saunter,precarious,fascism,protean,fastidious,farce,animus,encomium,opulence,propriety,insalubrious,inundate,reprobate,pastiche,conflagration,fusillade";
+    var words = "allusion,inclement,atrophy,averse,transcend,onerous"
+    var arr = words.split(',');
+    console.log(arr.length);
+    arr.forEach(word => {
+        $.ajax({
+            url: "https://api.dictionaryapi.dev/api/v2/entries/en/" + word, success: function (result) {
+                // console.log(result);
+                var innerHTML = "<details><summary>";
+                var synonyms = "synonyms: ";
+                console.log("***************************")
+                console.log(result[0].word);
+                innerHTML += result[0].word + "</summary>";
+
+                //console.log(result[0].meanings);
+                console.log(result[0].meanings.length);
+                result[0].meanings.forEach(meaning => {
+                    console.log( "" + meaning.partOfSpeech + ": ");
+                    innerHTML += "* " + meaning.partOfSpeech + "<br>";
+                    meaning.definitions.forEach(definition => {
+                        console.log("    * " + definition.definition);
+                        innerHTML += "    * " + definition.definition + "<br>";
+                        console.log("    ex: " + definition.example);
+                        innerHTML += "    * ex: " + definition.example + "<br>";
+                        synonyms += " " + definition.synonyms[0];
+                        for (let i = 1; i < 5; i++) {
+                            const synonym = definition.synonyms[i];
+                            synonyms = synonyms + ", " + synonym;
+                        }
+                    });
+                });
+                console.log(synonyms);
+                innerHTML += "    * " + synonyms + "<br>";
+                var word = document.createElement("div");
+                console.log(word);
+                var body = document.getElementById("body");
+                console.log(innerHTML);
+                body.innerHTML += innerHTML;
+            }
+        });
+    });
+</script>
+
+</html>
+
+
+<!-- 
+    <details>
+        <summary>CLICK ME</summary>
+    </details>
+ -->
