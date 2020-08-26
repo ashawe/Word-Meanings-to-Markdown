@@ -52,7 +52,7 @@ function writeMeaningToFile(inputStream, filename) {
         toWrite += "    - " + meaning.partOfSpeech + "\n";
         meaning.definitions.forEach(definition => {
             toWrite += "        - " + definition.definition + "\n";
-            toWrite += "        - ex: " + definition.example + "\n";
+            toWrite += "            - ex: " + definition.example + "\n";
             if (definition.synonyms !== undefined) {
                 synonyms += " " + definition.synonyms[0];
                 for (let i = 1; i < 5; i++) {
@@ -62,7 +62,8 @@ function writeMeaningToFile(inputStream, filename) {
             }
         });
     });
-    toWrite += "        - " + synonyms + "\n";
+    if (definition.synonyms !== undefined)
+        toWrite += "    - " + synonyms + "\n";
     stream.write(toWrite);
     stream.end();
 }
@@ -92,4 +93,4 @@ function wordMeaningToMarkdown(inputFileName, outputFileName) {
     });
 }
 
-wordMeaningToMarkdown("./words1.txt", "./words.md");
+wordMeaningToMarkdown("./words.txt", "./words.md");
