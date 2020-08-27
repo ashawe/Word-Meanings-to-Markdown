@@ -55,15 +55,14 @@ If you're unable to find an open issue addressing the problem, [open a new one](
 *    It's okay to have work-in-progress pull requests. Add [WIP] in the title of your **draft** pull request if that's the case, otherwise your pull request will be considered in a state of being able to be merged as is.
 
 
-### 4. Commit and push changes ([Commit guidelines](https://github.com/ashawe/Word-Meanings-to-Markdown/blob/master/COMMIT-GUIDLINES.md))
+### 4. Commit and push changes
 
 ```shell
 git add .
 git commit -m <message>
 git push
 ```
-
-### Make sure your 'message' follows [these](https://github.com/ashawe/CTF-Website-Template-2020/blob/master/COMMIT-GUIDLINES.md) standards.
+### We sugguest your 'message' follows [these](https://github.com/ashawe/Word-Meanings-to-Markdown/blob/master/COMMIT-GUIDLINES.md) standards when you commit.
 
 ### 5. Create a pull request
 
