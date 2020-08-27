@@ -90,9 +90,12 @@ You should be clear which problem you're trying to solve with your contribution.
 For example:
 
 > Add link to code of conduct in README.md
+
 Doesn't tell me anything about why you're doing that
 
-> Add link to code of conduct in README.md because users don't always look in the CONTRIBUTING.md
+> Add link to code of conduct in README.md.
+>
+> because users don't always look in the CONTRIBUTING.md
 
 Tells me the problem that you have found, and the pull request shows me the action you have taken to solve it.
 
