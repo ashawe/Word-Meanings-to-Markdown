@@ -45,7 +45,7 @@ function writeMeaningToFile(inputStream, filename) {
     let stream = fs.createWriteStream(filename, { flags: 'a' });
     let toWrite = "";
     let result = JSON.parse(inputStream);
-    let synonyms = "synonyms:  ";
+    let synonyms = "synonyms: ";
     let synonymsList = [];
     let isSynonymAvailable = false;
     if(result[0] === undefined) return; // return if no word definition is found
