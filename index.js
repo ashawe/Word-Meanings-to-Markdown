@@ -53,7 +53,7 @@ function writeMeaningToFile(inputStream, filename) {
         toWrite += "    - " + meaning.partOfSpeech + "\n";
         meaning.definitions.forEach(definition => {
             toWrite += "        - " + definition.definition + "\n";
-            if(definition.example){
+            if(definition.example !== undefined){
                 toWrite += "            - ex: " + definition.example + "\n";
             }
             if (definition.synonyms !== undefined) {
