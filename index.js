@@ -13,6 +13,12 @@ AUTHOR: AshAwe (https://github.com/ashawe)
 let fs = require("fs");
 const http = require('https');
 
+// GLOBALS
+
+// replace with 0 for no limit
+const SYNONYM_LIMIT_PER_DEFINITION = 3; // number of synonyms per word
+const SYNONYM_LIMIT = 8; // number of synonyms per definition of the word
+
 /**
  * Reads words from a txt file (comma separated) and returns an array of array of words.
  *
@@ -78,7 +84,8 @@ function writeMeaningToFile(inputStream, filename) {
     let toWrite = "";
     let result = JSON.parse(inputStream);
     let synonyms = "synonyms: ";
-    let synonymsList = [];
+    let synonymsList = [];  // array of synonyms
+    let allSynonyms = [];
     let isSynonymAvailable = false;
     if (result[0] === undefined) return; // return if no word definition is found
     toWrite += "- " + result[0].word + "\n";
@@ -91,13 +98,26 @@ function writeMeaningToFile(inputStream, filename) {
             }
             if (definition.synonyms !== undefined) {
                 isSynonymAvailable = true;
-                synonymsList.push(...definition.synonyms)
+                allSynonyms.push(...definition.synonyms);
+                // push SYNONYM_LIMIT_PER_DEFINITION number of synonyms array in the synonyms list
+                let limitedSynonyms = definition.synonyms.splice(0,SYNONYM_LIMIT_PER_DEFINITION || definition.synonyms.length);
+                synonymsList.push(...limitedSynonyms);
             }
         });
     });
     if (isSynonymAvailable)
-        // remove duplicate and write comma separated synonyms
-        toWrite += "    - " + synonyms + [...new Set(synonymsList)].join(', ') + "\n";
+    {
+        let uniqueSynonyms;
+        if( allSynonyms.length <= SYNONYM_LIMIT )    // if total number of synonyms is less than the SYNONYM_LIMIT, write all the synonyms
+            uniqueSynonyms = [...new Set(allSynonyms)];
+        else if( synonymsList.length == SYNONYM_LIMIT_PER_DEFINITION ) // if only one definition, write all the synonyms from the definition ( LIMIT by SYNONYM_LIMIT ).
+            uniqueSynonyms = [...new Set(allSynonyms.splice(0,SYNONYM_LIMIT))]; 
+        else    // else write only chosen synonyms
+            // remove duplicate and write comma separated synonyms... limiting to SYNONYM_LIMIT
+            uniqueSynonyms = [...new Set(synonymsList)].splice(0,SYNONYM_LIMIT || uniqueSynonyms.length);
+        
+        toWrite += "    - " + synonyms + uniqueSynonyms.join(', ') + "\n";
+    }
     stream.write(toWrite);
     stream.end();
 }
@@ -136,6 +156,8 @@ async function waitAndWriteMeaningToFileHandler(word, filename) {
  * @return {undefined} Returns nothing.
  */
 function wordMeaningToMarkdown(inputFileName, outputFileName, chunkSize = 0) {
+    if(SYNONYM_LIMIT < 0 || SYNONYM_LIMIT_PER_DEFINITION < 0)
+        throw 'SYNONYM LIMITs SHOULD BE GREATER THAN OR EQUAL TO 0';
     let arrayOfArrayOfWords = wordsFromFileToArray(inputFileName,chunkSize);
     let changedFileName = outputFileName;
     let arrayOfFileName = outputFileName.split(".");
@@ -151,4 +173,4 @@ function wordMeaningToMarkdown(inputFileName, outputFileName, chunkSize = 0) {
     }
 }
 
-wordMeaningToMarkdown("words1.txt", "words.md",50);    // for output in one file do not provide anything
+wordMeaningToMarkdown("words1.txt", "test.md");    // for output in one file do not provide anything
